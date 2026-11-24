@@ -8,9 +8,16 @@
 
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
+    <!-- The .NET SDK provides Source Link for this project. -->
+    <PackageReference Remove="Microsoft.SourceLink.GitHub" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- Downstream hosts build this adapter against the same published CAP core as their storage providers. -->
+  <ItemGroup Condition="'$(CapBuildCoreFromSource)' != 'true'">
+    <PackageReference Include="DotNetCore.CAP" Version="[$(VersionPrefix)]" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(CapBuildCoreFromSource)' == 'true'">
     <ProjectReference Include="..\DotNetCore.CAP\DotNetCore.CAP.csproj" />
   </ItemGroup>
 

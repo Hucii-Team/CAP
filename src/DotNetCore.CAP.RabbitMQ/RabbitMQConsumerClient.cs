@@ -81,12 +81,8 @@ internal sealed class RabbitMqConsumerClient : IConsumerClient
             await _consumer.HandleChannelShutdownAsync(null!, new ShutdownEventArgs(ShutdownInitiator.Application, 0, ex.Message + "-->" + nameof(_channel.BasicConsumeAsync)));
         }
 
-        while (true)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.WaitHandle.WaitOne(timeout);
-        }
-        // ReSharper disable once FunctionNeverReturns
+        // RabbitMQ dispatches registered consumers through callbacks. Wait for cancellation without occupying a worker.
+        await Task.Delay(Timeout.Infinite, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task CommitAsync(object? sender)
